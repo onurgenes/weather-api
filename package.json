@@ -1,0 +1,29 @@
+{
+  "name": "weather-api",
+  "version": "1.0.0",
+  "description": "Weather API for Udemy course",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onurgenes/weather-api.git"
+  },
+  "keywords": [
+    "weather",
+    "nodejs",
+    "udemy"
+  ],
+  "author": "Onur Genes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/onurgenes/weather-api/issues"
+  },
+  "homepage": "https://github.com/onurgenes/weather-api#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "lodash": "^4.17.11"
+  }
+}
