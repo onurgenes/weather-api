@@ -15,10 +15,10 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/current', (req, res) => {
+app.get('/currently', (req, res) => {
     var params = _.pick(req.body, ['latitude', 'longitude']);
-    const url = `https://api.darksky.net/forecast/${keys.apikey}/${params.latitude},${params.longitude}`;
-    
+    const url = `https://api.darksky.net/forecast/${keys.apikey}/${params.latitude},${params.longitude}?units=si`;
+
     http.get(url, response => {
         var body = '';
         if (response.statusCode >= 400 && response.statusCode <= 600) {
@@ -31,13 +31,44 @@ app.get('/current', (req, res) => {
         });
         response.on('end', () => {
             var parsed = JSON.parse(body);
-            var currentTemp = parsed.currently.temperature;
-            var regions = parsed.alerts[0].regions;
+            var currently = parsed.currently;
+            var currentTemp = currently.temperature;
+            var summary = currently.summary;
+            var precipType = currently.precipType;
+            var precipProbability = currently.precipProbability;
+            var apparentTemperature = currently.apparentTemperature;
 
             res.status(200).send({
                 currentTemp: currentTemp,
-                regions: regions
+                summary: summary,
+                precipType: precipType,
+                precipProbability: precipProbability,
+                apparentTemperature: apparentTemperature
             });
+        });
+    }).on('error', (error) => {
+        res.status(501).send(error);
+    });
+});
+
+app.get('/daily', (req, res) => {
+    var params = _.pick(req.body, ['latitude', 'longitude']);
+    const url = `https://api.darksky.net/forecast/${keys.apikey}/${params.latitude},${params.longitude}?units=si`;
+    console.log(url)
+    http.get(url, response => {
+        var body = '';
+        if (response.statusCode >= 400 && response.statusCode <= 600) {
+            return res.status(response.statusCode).send({
+                error: 'something went wrong'
+            });
+        };
+        response.on('data', (d) => {
+            body += d;
+        });
+        response.on('end', () => {
+            var parsed = JSON.parse(body);
+            var daily = parsed.daily.data;
+            res.status(200).send(daily);
         });
     }).on('error', (error) => {
         res.status(501).send(error);
