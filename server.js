@@ -15,13 +15,15 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/currently', (req, res) => {
+app.post('/currently', (req, res) => {
     var params = _.pick(req.body, ['latitude', 'longitude']);
     const url = `https://api.darksky.net/forecast/${keys.apikey}/${params.latitude},${params.longitude}?units=si`;
-
+    console.log(params)
+    console.log(url)
     http.get(url, response => {
         var body = '';
         if (response.statusCode >= 400 && response.statusCode <= 600) {
+            console.log(response.statusCode)
             return res.status(response.statusCode).send({
                 error: 'something went wrong'
             });
@@ -32,19 +34,20 @@ app.get('/currently', (req, res) => {
         response.on('end', () => {
             var parsed = JSON.parse(body);
             var currently = parsed.currently;
-            var currentTemp = currently.temperature;
+            var currentTemp = Number(currently.temperature);
             var summary = currently.summary;
             var precipType = currently.precipType;
-            var precipProbability = currently.precipProbability;
-            var apparentTemperature = currently.apparentTemperature;
-
-            res.status(200).send({
+            var precipProbability = Number(currently.precipProbability.toFixed(2));
+            var apparentTemperature = Number(currently.apparentTemperature);
+            let obj = {
                 currentTemp: currentTemp,
                 summary: summary,
                 precipType: precipType,
                 precipProbability: precipProbability,
                 apparentTemperature: apparentTemperature
-            });
+            }
+            console.log(obj);
+            res.status(200).send(obj);
         });
     }).on('error', (error) => {
         res.status(501).send(error);
